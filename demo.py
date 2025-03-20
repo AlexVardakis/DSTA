@@ -60,13 +60,13 @@ def bbox_sampling(bbox_result, nbox=19, imsize=None, topN=5):
 
     # fix bbox
     new_boxes = []
-    for box, label in zip(bboxes, labels):
+    for box, label,s in zip(bbox_result["bboxes"], bbox_result["labels"], bbox_result["scoreds"]):
         x1 = min(max(0, int(box[0])), imsize[1])
         y1 = min(max(0, int(box[1])), imsize[0])
         x2 = min(max(x1 + 1, int(box[2])), imsize[1])
         y2 = min(max(y1 + 1, int(box[3])), imsize[0])
         if (y2 - y1 + 1 > 2) and (x2 - x1 + 1 > 2):
-            new_boxes.append([x1, y1, x2, y2, box[4], label])
+            new_boxes.append([x1, y1, x2, y2, s, label])
 
     if len(new_boxes) == 0:  # no bboxes
         new_boxes.append([0, 0, imsize[1]-1, imsize[0]-1, 1.0, 0])
@@ -115,6 +115,7 @@ def extract_features(detector, feat_extractor, video_file, n_frames=50, n_boxes=
         else:
             frame = videoReader.get_frame(idx)
         # run object detection inference
+
         bbox_result = inference_detector(detector, frame)
 
 
